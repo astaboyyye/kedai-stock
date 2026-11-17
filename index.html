@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multilingual Menu Helper</title>
+<style>
+  :root {
+    --bg: #FFF7EE;
+    --card: #FFFFFF;
+    --accent: #E8734A;
+    --accent-soft: #FCE8DD;
+    --green: #7BA05B;
+    --green-soft: #EDF4E4;
+    --gold: #D9A441;
+    --gold-soft: #FBF2DD;
+    --text: #4A3B2E;
+    --muted: #8A7A68;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 17px;
+    padding: 16px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header {
+    text-align: center;
+    padding: 28px 16px 10px;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+  header p { color: var(--muted); margin-top: 6px; }
+  section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin: 22px 0;
+    box-shadow: 0 4px 14px rgba(200, 150, 100, 0.12);
+  }
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .badge {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 1rem; color: #fff;
+    flex-shrink: 0;
+  }
+  .badge.b1 { background: var(--accent); }
+  .badge.b2 { background: var(--green); }
+  .badge.b3 { background: var(--gold); }
+  .sec-head h2 { font-size: 1.25rem; }
+  .sec-head .hint { font-size: 0.85rem; color: var(--muted); }
+  textarea {
+    width: 100%;
+    min-height: 190px;
+    border: 2px solid #F0E2D2;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #FFFDF9;
+    resize: vertical;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .count { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+  .lang-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .lang-card {
+    border-radius: 14px;
+    padding: 16px;
+    border: 2px solid transparent;
+  }
+  .lang-card.bm { background: var(--accent-soft); border-color: #F5CDB8; }
+  .lang-card.en { background: var(--green-soft); border-color: #CFE0BC; }
+  .lang-card.zh { background: var(--gold-soft); border-color: #EDD9A8; }
+  .lang-card h3 { font-size: 1rem; margin-bottom: 8px; }
+  .lang-card ul { list-style: none; }
+  .lang-card li {
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.12);
+    font-size: 1rem;
+  }
+  .lang-card li:last-child { border-bottom: none; }
+  .lang-card li.empty { color: var(--muted); font-style: italic; }
+  .notes-list { list-style: none; }
+  .notes-list li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+  }
+  .notes-list li:last-child { border-bottom: none; }
+  .dish-name {
+    flex: 0 0 38%;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .dish-note { flex: 1; color: var(--text); font-size: 0.95rem; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 10px 0 30px;
+  }
+  @media (min-width: 700px) {
+    .lang-grid { grid-template-columns: repeat(3, 1fr); }
+    header h1 { font-size: 2.2rem; }
+  }
+  @media (max-width: 480px) {
+    body { font-size: 16px; padding: 10px; }
+    section { padding: 16px; }
+    .notes-list li { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍜 Multilingual Menu Helper</h1>
+    <p>Turn your menu into Bahasa Malaysia, English &amp; Chinese — right on this page.</p>
+  </header>
+
+  <!-- Section 1: Menu input -->
+  <section>
+    <div class="sec-head">
+      <div class="badge b1">1</div>
+      <div>
+        <h2>Your Menu</h2>
+        <div class="hint">Type or paste your dishes — one dish per line. Everything updates instantly.</div>
+      </div>
+    </div>
+    <textarea id="menuInput" spellcheck="false"></textarea>
+    <div class="count" id="dishCount"></div>
+  </section>
+
+  <!-- Section 2: Three-language menu -->
+  <section>
+    <div class="sec-head">
+      <div class="badge b2">2</div>
+      <div>
+        <h2>Three-Language Menu</h2>
+        <div class="hint">The same menu in BM, English and Chinese. Each dish stays on its own line.</div>
+      </div>
+    </div>
+    <div class="lang-grid">
+      <div class="lang-card bm">
+        <h3>🇲🇾 Bahasa Malaysia</h3>
+        <ul id="outBM"></ul>
+      </div>
+      <div class="lang-card en">
+        <h3>🇬🇧 English</h3>
+        <ul id="outEN"></ul>
+      </div>
+      <div class="lang-card zh">
+        <h3>🇨🇳 中文</h3>
+        <ul id="outZH"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Short dish notes -->
+  <section>
+    <div class="sec-head">
+      <div class="badge b3">3</div>
+      <div>
+        <h2>Short Dish Notes</h2>
+        <div class="hint">A quick flavour / ingredient note beside each dish.</div>
+      </div>
+    </div>
+    <ul class="notes-list" id="notesList"></ul>
+  </section>
+
+  <footer>Everything happens on this page only — nothing is saved between visits.</footer>
+</div>
+
+<script>
+// ---------- Translation dictionary (Malaysian dishes) ----------
+// key: lowercase dish name -> { bm, zh, note }
+const DISHES = {
+  "nasi lemak": {
+    bm: "Nasi Lemak",
+    zh: "椰浆饭",
+    note: "Coconut rice with sambal, anchovies, peanut and egg — creamy and spicy."
+  },
+  "ayam goreng berempah": {
+    bm: "Ayam Goreng Berempah",
+    zh: "马来香料炸鸡",
+    note: "Crispy fried chicken marinated in turmeric, lemongrass and spices — fragrant and crunchy."
+  },
+  "laksa penang": {
+    bm: "Laksa Penang",
+    zh: "槟城亚参叻沙",
+    note: "Tangy tamarind fish broth with rice noodles — sour, spicy and refreshing."
+  },
+  "char kway teow": {
+    bm: "Kuetiau Goreng",
+    zh: "炒河粉",
+    note: "Stir-fried flat noodles with egg, prawn and bean sprouts — smoky and savoury."
+  },
+  "satay ayam": {
+    bm: "Satay Ayam",
+    zh: "鸡肉沙爹串",
+    note: "Grilled chicken skewers with peanut sauce — sweet, smoky and nutty."
+  },
+  "roti canai": {
+    bm: "Roti Canai",
+    zh: "印度煎饼",
+    note: "Flaky flatbread with dhal or curry dip — crispy outside, soft inside."
+  },
+  "mee goreng mamak": {
+    bm: "Mee Goreng Mamak",
+    zh: "嘛嘛炒面",
+    note: "Yellow noodles fried with sweet-spicy sauce, egg and tofu — bold and savoury."
+  },
+  "bak kut teh": {
+    bm: "Bak Kut Teh",
+    zh: "肉骨茶",
+    note: "Pork rib soup simmered with herbs and garlic — peppery and warming."
+  },
+  "chicken rice": {
+    bm: "Nasi Ayam",
+    zh: "海南鸡饭",
+    note: "Poached chicken with fragrant rice, ginger and chilli sauce — light and tender."
+  },
+  "curry laksa": {
+    bm: "Laksa Kari",
+    zh: "咖喱叻沙",
+    note: "Creamy coconut curry noodle soup with tofu puffs — rich and spicy."
+  },
+  "rojak": {
+    bm: "Rojak",
+    zh: "啰惹（水果沙拉）",
+    note: "Fruit and fritters tossed in sweet prawn paste — tangy, sweet and crunchy."
+  },
+  "cendol": {
+    bm: "Cendol",
+    zh: "煎蕊冰",
+    note: "Shaved ice with pandan jelly, coconut milk and gula melaka — sweet and cooling."
+  },
+  "teh tarik": {
+    bm: "Teh Tarik",
+    zh: "拉茶",
+    note: "Frothy pulled milk tea — creamy, sweet and smooth."
+  },
+  "fried rice": {
+    bm: "Nasi Goreng",
+    zh: "炒饭",
+    note: "Wok-fried rice with egg and vegetables — savoury and aromatic."
+  },
+  "fish head curry": {
+    bm: "Kari Kepala Ikan",
+    zh: "咖喱鱼头",
+    note: "Fish head in spicy tamarind curry with okra — bold, tangy and fiery."
+  }
+};
+
+// Generic fallbacks for unknown lines
+const FALLBACKS = {
+  en: t => t, // English input is shown as-is
+  bm: {
+    "rice": "Nasi", "chicken": "Ayam", "fish": "Ikan", "beef": "Daging Lembu",
+    "prawn": "Udang", "noodle": "Mee", "soup": "Sup", "fried": "Goreng",
+    "tea": "Teh", "coffee": "Kopi", "juice": "Jus", "ice": "Ais"
+  },
+  zh: {
+    "rice": "饭", "chicken": "鸡", "fish": "鱼", "beef": "牛肉",
+    "prawn": "虾", "noodle": "面", "soup": "汤", "fried": "炒",
+    "tea": "茶", "coffee": "咖啡", "juice": "果汁", "ice": "冰"
+  }
+};
+
+const DEFAULT_MENU = `Nasi Lemak
+Ayam Goreng Berempah
+Laksa Penang
+Teh Tarik`;
+
+// ---------- App logic ----------
+const input = document.getElementById("menuInput");
+const outBM = document.getElementById("outBM");
+const outEN = document.getElementById("outEN");
+const outZH = document.getElementById("outZH");
+const notesList = document.getElementById("notesList");
+const dishCount = document.getElementById("dishCount");
+
+function getDishEntry(line) {
+  const key = line.trim().toLowerCase();
+  if (DISHES[key]) return DISHES[key];
+  return null;
+}
+
+function lookupOrKeep(dish, lang) {
+  const entry = getDishEntry(dish);
+  if (entry) return entry[lang] || dish; // entries have no "en" key — typed text IS the English
+  // No dictionary match: keep original text (works for any custom dish)
+  return dish;
+}
+
+function render() {
+  const lines = input.value
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  dishCount.textContent = lines.length === 1
+    ? "1 dish on the menu"
+    : lines.length + " dishes on the menu";
+
+  const fill = (ul, lang) => {
+    ul.innerHTML = "";
+    if (lines.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = "Add a dish above to see it here.";
+      ul.appendChild(li);
+      return;
+    }
+    lines.forEach(line => {
+      const li = document.createElement("li");
+      li.textContent = lookupOrKeep(line, lang);
+      ul.appendChild(li);
+    });
+  };
+
+  fill(outBM, "bm");
+  fill(outEN, "en");
+  fill(outZH, "zh");
+
+  notesList.innerHTML = "";
+  if (lines.length === 0) {
+    const li = document.createElement("li");
+    li.innerHTML = '<span class="dish-note" style="font-style:italic;color:var(--muted)">Add a dish above to see its note here.</span>';
+    notesList.appendChild(li);
+    return;
+  }
+  lines.forEach(line => {
+    const entry = getDishEntry(line);
+    const li = document.createElement("li");
+    const name = document.createElement("span");
+    name.className = "dish-name";
+    name.textContent = lookupOrKeep(line, "en");
+    const note = document.createElement("span");
+    note.className = "dish-note";
+    note.textContent = entry ? entry.note : "A house specialty — add your own note here (flavour, ingredients or style).";
+    li.appendChild(name);
+    li.appendChild(note);
+    notesList.appendChild(li);
+  });
+}
+
+// Start with the example menu — the app never opens empty
+input.value = DEFAULT_MENU;
+render();
+
+// Feature 1: translate as you go
+input.addEventListener("input", render);
+</script>
+</body>
+</html>
